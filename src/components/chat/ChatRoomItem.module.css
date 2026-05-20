@@ -1,0 +1,56 @@
+.item {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-md);
+
+  background-color: white;
+
+  text-align: left;
+
+  transition: 0.2s;
+}
+
+.item:hover {
+  background-color: #f3f4f6;
+}
+
+.active {
+  background-color: #eef2ff;
+  border: 1px solid var(--color-primary);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 6px;
+}
+
+.top strong {
+  font-size: 14px;
+}
+
+.top p {
+  margin: 0;
+}
+
+.badge {
+  min-width: 20px;
+  height: 20px;
+
+  padding: 0 6px;
+
+  border-radius: 999px;
+
+  background-color: var(--color-primary);
+
+  color: white;
+
+  font-size: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

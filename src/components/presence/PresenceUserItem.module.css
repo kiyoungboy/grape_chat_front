@@ -1,0 +1,49 @@
+.item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    transition: 0.2s;
+}
+
+.item:hover {
+    background-color: #f8fafc;
+}
+
+.status {
+    width: 10px;
+
+    height: 10px;
+
+    border-radius: 999px;
+}
+
+.online {
+    background-color: #22c55e;
+}
+
+.offline {
+    background-color: #cbd5e1;
+}
+
+.info {
+    display: flex;
+
+    flex-direction: column;
+}
+
+.info strong {
+    font-size: 13px;
+}
+
+.info span {
+    color: var(--color-text-sub);
+
+    font-size: 12px;
+}

@@ -1,0 +1,118 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: rgba(0, 0, 0, 0.5);
+
+    z-index: 1000;
+}
+
+.modal {
+    width: 420px;
+
+    background-color: white;
+
+    border-radius: 16px;
+
+    padding: 24px;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.header h2 {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+.input {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+
+    font-size: 14px;
+}
+
+.input:focus {
+    outline: none;
+
+    border-color: #6366f1;
+}
+
+.userList {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    max-height: 240px;
+
+    overflow-y: auto;
+}
+
+.userItem {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    transition: background-color 0.2s;
+}
+
+.userItem:hover {
+    background-color: #f3f4f6;
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 24px;
+}
+
+.cancelButton,
+.submitButton {
+    padding: 10px 16px;
+
+    border: none;
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.cancelButton {
+    background-color: #e5e7eb;
+}
+
+.submitButton {
+    background-color: #6366f1;
+
+    color: white;
+}

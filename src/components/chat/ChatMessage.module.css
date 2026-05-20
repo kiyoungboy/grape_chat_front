@@ -1,0 +1,61 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+
+  margin-bottom: 14px;
+}
+
+.mine {
+  align-items: flex-end;
+}
+
+.other {
+  align-items: flex-start;
+}
+
+.sender {
+  margin-bottom: 4px;
+
+  color: var(--color-text-sub);
+
+  font-size: 12px;
+}
+
+.bubble {
+  max-width: 420px;
+
+  padding: 12px 14px;
+
+  border-radius: 14px;
+
+  word-break: break-word;
+
+  font-size: 14px;
+}
+
+.mine .bubble {
+  background-color: var(--color-primary);
+
+  color: white;
+}
+
+.other .bubble {
+  background-color: #f3f4f6;
+}
+
+.time {
+  margin-top: 4px;
+
+  color: var(--color-text-light);
+
+  font-size: 11px;
+}
+
+.readCount {
+
+    margin-top: 4px;
+
+    color: var(--color-text-light);
+
+    font-size: 11px;
+}
