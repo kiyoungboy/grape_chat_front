@@ -7,7 +7,7 @@ export const inviteUsers =
     ) => {
 
     await api.post(
-        `/api/chat/rooms/${roomKey}/invite`,
+        `/chat/rooms/${roomKey}/invite`,
         userKeys
     );
 };

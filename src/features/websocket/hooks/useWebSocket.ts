@@ -25,6 +25,8 @@ export const useWebSocket = () => {
     const markMessageAsRead = useChatStore((state) => state.markMessageAsRead);
     const myUserKey = useAuthStore((state) => state.userKey);
     const setUsers = usePresenceStore((state) => state.setUsers);
+    const client = useWebSocketStore((state) => state.client);
+    const connected = useWebSocketStore((state) => state.connected);
 
     useEffect(() => {
         const client = createStompClient();
@@ -98,20 +100,19 @@ export const useWebSocket = () => {
     }, [setClient, setConnected, setConnecting, myUserKey, addRoom]);
 
     useEffect(() => {
-        const client = useWebSocketStore.getState().client;
 
-        if(!client || !currentRoom){
-            return;
-        }
-
-        if(!client.connected) {
+        if(!client || !currentRoom || !connected){
             return;
         }
 
         subscriptionRef.current?.unsubscribe();
 
+        console.log("SUBSCRIBE START");
+
         subscriptionRef.current = client.subscribe(`/subscribe/chat/${currentRoom.roomKey}`,
             (message) => {
+
+                console.log("MESSAGE RECEIVED", message.body);
                 const event = JSON.parse(message.body);
 
                 switch(event.eventType) {
@@ -164,5 +165,5 @@ export const useWebSocket = () => {
         );
 
         return () => { subscriptionRef.current?.unsubscribe(); };
-    }, [currentRoom, addMessage, updateRoomLastMessage, increaseUnreadCount, setTyping, removeTyping, markMessageAsRead, myUserKey]);
+    }, [currentRoom, addMessage, updateRoomLastMessage, increaseUnreadCount, setTyping, removeTyping, markMessageAsRead, myUserKey, client, connected]);
 };

@@ -12,7 +12,7 @@ export interface MeResponse {
 export const getMe = async () => {
 
     const response = await axios.get<MeResponse>(
-        "http://localhost:8181/api/auth/me",
+        "http://localhost:8181/auth/me",
         {
             withCredentials: true,
         }

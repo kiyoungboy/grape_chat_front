@@ -13,13 +13,13 @@ export interface SendMessageRequest {
 }
 
 export const getMessages = async( roomKey: string ) => {
-    const response = await axios.get(`/api/chat/message/${roomKey}`);
+    const response = await axios.get(`/chat/message/${roomKey}`);
 
     return responseData<MessageEventPayload[]>(response);
 }
 
 export const sendMessage = async ( request: SendMessageRequest ) => {
-    const response = await axios.post("/api/chat/message", request);
+    const response = await axios.post("/chat/message", request);
 
     return responseData<MessageEventPayload>(response);
 }

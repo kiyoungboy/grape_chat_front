@@ -27,7 +27,7 @@ export const createRoom =
 
     const response =
         await api.post(
-            "/api/chat/rooms",
+            "/chat/rooms",
             request
         );
 
