@@ -17,8 +17,6 @@ export default function ChatRoomModal({
         (state) => state.users
     );
 
-    const addRoom = useRoomStore((state) => state.addRoom);
-
     const setCurrentRoom = useRoomStore((state) => state.setCurrentRoom);
 
     const [roomName, setRoomName] =
@@ -47,9 +45,6 @@ export default function ChatRoomModal({
 
                     userKeys: selectedUsers,
                 });
-
-            addRoom(response);
-
             setCurrentRoom(response);
             
             setRoomName("");

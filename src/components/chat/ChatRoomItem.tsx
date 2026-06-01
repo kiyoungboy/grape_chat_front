@@ -33,7 +33,7 @@ export default function ChatRoomItem({
         )}
       </div>
 
-      <p>{room.lastMessage || "메시지가 없습니다."}</p>
+      <p>{room.lastMessageContent || "메시지가 없습니다."}</p>
     </button>
   );
 }

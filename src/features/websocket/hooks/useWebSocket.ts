@@ -9,6 +9,7 @@ import { useTypingStore }from "@/features/typing/store/typing.store";
 import type { ReadEventPayload } from "@/features/chat/types/read.type";
 import { useAuthStore } from "@/store/auth.store";
 import { usePresenceStore } from "@/features/presence/store/presence.store";
+import { getChatRooms } from "@/features/chat/api/room.api";
 
 export const useWebSocket = () => {
     const subscriptionRef = useRef<StompSubscription | null>(null);
@@ -27,6 +28,7 @@ export const useWebSocket = () => {
     const setUsers = usePresenceStore((state) => state.setUsers);
     const client = useWebSocketStore((state) => state.client);
     const connected = useWebSocketStore((state) => state.connected);
+    const setRooms = useRoomStore((state) => state.setRooms);
 
     useEffect(() => {
         const client = createStompClient();
@@ -56,18 +58,28 @@ export const useWebSocket = () => {
                 client.subscribe(
                     `/subscribe/users/${myUserKey}`,
 
-                    (message) => {
+                    async (message) => {
                         const event = JSON.parse(message.body);
 
                         switch(event.eventType){
                             case "ROOM_INVITE": {
+                                const rooms = await getChatRooms();
+                                setRooms(rooms);
+                                break;
+                            }
+
+                            case "ROOM_CREATED": {
+                                const rooms = await getChatRooms();
+                                setRooms(rooms);
+                                break;
+                            }
+
+                            case "ROOM_MESSAGE": {
                                 const payload = event.payload;
 
-                                addRoom({
-                                    ...payload,
-                                    unreadCount: 0,
-                                });
-
+                                if(currentRoom?.roomKey !== payload.roomKey){
+                                    increaseUnreadCount(payload.roomKey);
+                                }
                                 break;
                             }
 
@@ -155,7 +167,7 @@ export const useWebSocket = () => {
 
                     case "READ": {
                         const payload = event.payload as ReadEventPayload;
-                        markMessageAsRead(payload.messageKey);
+                        markMessageAsRead(payload.messageKey, payload.readCount);
                         break;
                     }
 

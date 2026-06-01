@@ -4,6 +4,7 @@ import styles from "./ChatRoomList.module.css";
 import { useChatRoom } from "@/features/chat/hooks/useChatRoom";
 import ChatRoomModal from "./ChatRoomModal";
 import { useState } from "react";
+import { readMessage } from "@/features/chat/api/readMessage.api";
 
 export default function ChatRoomList() {
   const {
@@ -26,23 +27,31 @@ export default function ChatRoomList() {
 
   return (
 
-    <div className={styles.list}>
+    <div className={styles.container}>
       <button onClick={() => setIsChatRoomModalOpen(true)}>
       채팅방 생성
       </button>
-      {rooms.map((room) => (
-        <ChatRoomItem
-          key={room.roomKey}
-          room={room}
-          selected={
-            currentRoom?.roomKey === room.roomKey
-          }
-          onClick={() => {
-            setCurrentRoom(room);
-            clearUnreadCount(room.roomKey);
-          }}
-        />
-      ))}
+      <div className={styles.list}>
+        {rooms.map((room) => (
+          <ChatRoomItem
+            key={room.roomKey}
+            room={room}
+            selected={
+              currentRoom?.roomKey === room.roomKey
+            }
+            onClick={async() => {
+              try{
+                await readMessage(room.roomKey);
+              } catch(error){
+                console.error(error);
+              }
+
+              clearUnreadCount(room.roomKey);
+              setCurrentRoom(room);
+            }}
+          />
+        ))}
+      </div>
       <ChatRoomModal open={isChatRoomModalOpen} onClose={() => setIsChatRoomModalOpen(false)} />
     </div>
   );

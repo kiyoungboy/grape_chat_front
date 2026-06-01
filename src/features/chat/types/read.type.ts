@@ -2,7 +2,7 @@ export interface ReadEventPayload {
 
     roomKey: string;
 
-    userKey: string;
+    readCount: number;
 
     messageKey: string;
 }

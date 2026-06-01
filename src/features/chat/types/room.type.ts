@@ -1,7 +1,7 @@
 export interface ChatRoom {
     roomKey: string;
     roomName: string;
-    lastMessage: string;
+    lastMessageContent: string;
     lastMessageAt: string;
     unreadCount: number;
 }

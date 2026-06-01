@@ -54,7 +54,7 @@ export const useRoomStore = create<RoomState>((set) => ({
 
                 return {
                     ...room,
-                    lastMessage: message,
+                    lastMessageContent: message,
                     lastMessageAt: new Date().toISOString(),
                 };
             });
@@ -89,25 +89,29 @@ export const useRoomStore = create<RoomState>((set) => ({
 
     clearUnreadCount: (roomKey) =>
         set((state) => ({
-            rooms: state.rooms.map((room) => {
-                if(room.roomKey !== roomKey) {
-                    return room;
-                }
-
-                return {
-                    ...room,
-                    unreadCount: 0,
-                };
-            }),
+            rooms: state.rooms.map(room => room.roomKey === roomKey ? {
+                ...room,
+                unreadCount: 0
+            }
+            :room
+        )
         })),
 
     addRoom: (room) => 
-        set((state) => ({
-            rooms: [
-                room,
-                ...state.rooms,
-            ],
-        })),
+        set((state) => {
+            const exist = state.rooms.some((r) => r.roomKey === room.roomKey);
+
+            if(exist){
+                return state;
+            }
+
+            return {
+                rooms: [
+                    room,
+                    ...state.rooms
+                ]
+            };
+        }),
 
     removeRoom: (roomKey) => 
         set((state) => ({

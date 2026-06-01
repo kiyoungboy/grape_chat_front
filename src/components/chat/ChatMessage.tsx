@@ -26,7 +26,7 @@ export default function ChatMessage({
     >
       {!isMine && (
         <span className={styles.sender}>
-          {message.senderEmail}
+          {message.senderNickname}
         </span>
       )}
 
@@ -36,18 +36,16 @@ export default function ChatMessage({
 
       {
         message.readCount !== undefined && (
-          <span className="styles.readCount">
+          <span className={styles.readCount}>
             {
-              message.readCount > 0 ? message.readCount : "읽음"
+              message.readCount === undefined ? "" : message.readCount > 0 ? message.readCount : "읽음"
             }
           </span>
         )
       }
 
       <span className={styles.time}>
-        {new Date(
-          message.createdAt
-        ).toLocaleTimeString()}
+        {message.createdAt?.replace("T","")?.substring(11,16)}
       </span>
     </div>
   );

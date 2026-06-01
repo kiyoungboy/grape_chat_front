@@ -22,9 +22,6 @@ export const useChatRoom = () => {
                 const response = await getChatRooms();
                 setRooms(response);
 
-                if(response.length > 0){
-                    setCurrentRoom(response[0]);
-                }
             } catch(error) {
                 console.error(error);
             } finally {

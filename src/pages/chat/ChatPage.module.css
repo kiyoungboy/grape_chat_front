@@ -86,7 +86,9 @@
 .messageArea {
   flex: 1;
   padding: 20px;
-  overflow-y: auto;
+
+  overflow: hidden;
+  min-height: 0;
 }
 
 .inputArea {
@@ -151,4 +153,25 @@
 
 .inviteButton:active {
     transform: scale(0.98);
+}
+
+.emptyRoom{
+    flex: 1;
+
+    display:flex;
+    flex-direction:column;
+
+    justify-content:center;
+    align-items:center;
+
+    gap:12px;
+}
+
+.emptyTitle{
+    font-size:20px;
+    font-weight:600;
+}
+
+.emptyDescription{
+    color:#888;
 }

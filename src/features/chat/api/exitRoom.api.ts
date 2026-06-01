@@ -7,6 +7,6 @@ export const exitRoom =
     ) => {
 
     await api.delete(
-        `/chat/${roomKey}`
+        `/chat/rooms/${roomKey}`
     );
 };

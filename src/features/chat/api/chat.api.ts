@@ -18,6 +18,22 @@ export const getMessages = async( roomKey: string ) => {
     return responseData<MessageEventPayload[]>(response);
 }
 
+export const getHistory = async (
+    roomKey: string,
+    before: string
+) => {
+    const response = await axios.get(
+        `/chat/message/${roomKey}/history`,
+        {
+            params: {
+                before,
+            },
+        }
+    );
+
+    return response.data;
+}
+
 export const sendMessage = async ( request: SendMessageRequest ) => {
     const response = await axios.post("/chat/message", request);
 

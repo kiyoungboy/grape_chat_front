@@ -2,7 +2,7 @@ export interface MessageEventPayload {
     messageKey: string;
     roomKey: string;
     senderUserKey: string;
-    senderEmail: string;
+    senderNickname: string;
     messageContent: string;
     createdAt: string;
     readCount?: number;

@@ -14,7 +14,8 @@ interface ChatState {
     ) => void;
 
     clearMessages: () => void;
-    markMessageAsRead: (messageKey: string) => void;
+    markMessageAsRead: (messageKey: string, readCount: number) => void;
+    prependMessages: (messages: MessageEventPayload[]) => void;
 }
 
 export const useChatStore = 
@@ -47,7 +48,7 @@ export const useChatStore =
                 messages: [],
             }),
 
-        markMessageAsRead: (messageKey) =>
+        markMessageAsRead: (messageKey, readCount) =>
             set((state) => ({
                 messages: state.messages.map((message) => {
                     if(message.messageKey !== messageKey){
@@ -56,8 +57,16 @@ export const useChatStore =
 
                     return {
                         ...message,
-                        readCount: Math.max(0, (message.readCount || 1) - 1),
+                        readCount,
                     };
                 })
             })),
+
+            prependMessages: (messages) => 
+                set((state) => ({
+                    messages: [
+                        ...messages,
+                        ...state.messages,
+                    ],
+                })),
     }));
