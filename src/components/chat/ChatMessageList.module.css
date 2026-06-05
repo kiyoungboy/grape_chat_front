@@ -8,3 +8,23 @@
 
     gap:8px;
 }
+
+.newMessageButton {
+    position: sticky;
+
+    bottom: 20px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    z-index: 100;
+
+    padding: 8px 14px;
+
+    border: none;
+
+    border-radius: 20px;
+
+    cursor: pointer;
+}

@@ -10,6 +10,7 @@ import type { ReadEventPayload } from "@/features/chat/types/read.type";
 import { useAuthStore } from "@/store/auth.store";
 import { usePresenceStore } from "@/features/presence/store/presence.store";
 import { getChatRooms } from "@/features/chat/api/room.api";
+import { useChatUiStore } from "@/features/chat/store/chatUi.store";
 
 export const useWebSocket = () => {
     const subscriptionRef = useRef<StompSubscription | null>(null);
@@ -29,6 +30,7 @@ export const useWebSocket = () => {
     const client = useWebSocketStore((state) => state.client);
     const connected = useWebSocketStore((state) => state.connected);
     const setRooms = useRoomStore((state) => state.setRooms);
+    const increaseNewMessage = useChatUiStore((state) => state.increaseNewMessage);
 
     useEffect(() => {
         const client = createStompClient();
@@ -135,6 +137,20 @@ export const useWebSocket = () => {
                             payload.roomKey,
                             payload.messageContent
                         );
+
+                        const container = document.querySelector('[data-chat-container="true"]') as HTMLElement | null;
+
+                        const isNearBottom = !container ? true : (container.scrollHeight - container.scrollTop - container.clientHeight) < 100;
+
+                        if(isNearBottom){
+                            setTimeout(() => {
+                                document.getElementById("chat-end")?.scrollIntoView({
+                                    behavior: "smooth"
+                                });
+                            }, 0)
+                        }else{
+                            increaseNewMessage();
+                        }
 
                         if(currentRoom.roomKey !== payload.roomKey){
                             increaseUnreadCount(payload.roomKey);

@@ -11,9 +11,19 @@ interface Props {
 export default function ChatMessage({
   message,
 }: Props) {
+
   const userKey = useAuthStore(
     (state) => state.userKey
   );
+  
+  if(message.messageType === "SYSTEM"){
+    return (
+      <div className={styles.systmeMessage}>
+        {message.messageContent}
+      </div>
+    );
+  }
+
 
   const isMine =
     userKey === message.senderUserKey;

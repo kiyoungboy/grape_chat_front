@@ -1,3 +1,4 @@
+import { useChatUiStore } from "@/features/chat/store/chatUi.store";
 import ChatMessage from "./ChatMessage";
 
 import styles from "./ChatMessageList.module.css";
@@ -10,10 +11,13 @@ export default function ChatMessageList() {
     messageEndRef,
     messageContainerRef,
     handleScroll,
+    scrollBottom
   } = useChat();
 
+  const newMessageCount = useChatUiStore((state) => state.newMessageCount);
+
   return (
-    <div className={styles.list} ref={messageContainerRef} onScroll={handleScroll}>
+    <div className={styles.list} ref={messageContainerRef} onScroll={handleScroll} data-chat-container="true">
       {messages.map((message) => (
         <ChatMessage
           key={message.messageKey}
@@ -21,7 +25,14 @@ export default function ChatMessageList() {
         />
       ))}
 
-      <div ref={messageEndRef} />
+      {
+        newMessageCount > 0 && (
+          <button className={styles.newMessageButton} onClick={scrollBottom}>
+            새 메시지 {newMessageCount}개
+          </button>
+        )
+      }
+      <div id="chat-end" ref={messageEndRef} />
     </div>
   );
 }

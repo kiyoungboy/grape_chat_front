@@ -4,6 +4,7 @@ import { getHistory, getMessages } from "../api/chat.api";
 import { useRoomStore } from "../store/room.store";
 import { useWebSocketStore } from "@/features/websocket/store/websocket.store";
 import { useAuthStore } from "@/store/auth.store";
+import { useChatUiStore } from "../store/chatUi.store";
 
 export const useChat = () => {
 
@@ -17,6 +18,25 @@ export const useChat = () => {
     const prependMessages = useChatStore((state) => state.prependMessages);
     const loadingHistoryRef = useRef(false);
     const messageContainerRef = useRef<HTMLDivElement | null>(null);
+    const clearNewMessage = useChatUiStore((state) => state.clearNewMessage);
+    const scrollBottom = () => {
+        requestAnimationFrame(() => {
+            messageEndRef.current?.scrollIntoView({
+                behavior: "smooth",
+            });
+
+            clearNewMessage();
+        })
+    }
+    const isNearBottom = () => {
+        const container = messageContainerRef.current;
+
+        if(!container){
+            return true;
+        }
+
+        return (container.scrollHeight - container.scrollTop - container.clientHeight) < 100;
+    };
 
     useEffect(() => {
         const initialize = async () => {
@@ -29,11 +49,12 @@ export const useChat = () => {
 
                 const response = await getMessages(currentRoom.roomKey);
                 setMessages(response);
+                requestAnimationFrame(() => {scrollBottom();})
                 const lastMessage = response[response.length - 1];
 
                 if(lastMessage && client){
                     client.publish({
-                        destination:"publish/chat/event",
+                        destination:"publish/chat/read",
                         body: JSON.stringify({
                             eventType: "READ",
                             payload: {
@@ -52,14 +73,6 @@ export const useChat = () => {
         initialize();
     }, [currentRoom, setMessages, clearMessages, client, userKey]);
 
-
-    /** 하단 자동 스크롤 */
-    // useEffect(() => {
-    //     messageEndRef.current?.scrollIntoView({
-    //         behavior: "smooth",
-    //     });
-    // }, [messages]);
-
     /** 이전 메시지 로드 */
     const loadHistory = async () => {
         if(!currentRoom || messages.length === 0 || loadingHistoryRef.current){
@@ -73,7 +86,21 @@ export const useChat = () => {
             const response = await getHistory(currentRoom.roomKey, oldestMessage.createdAt);
 
             if(response && response.length > 0){
+                const container = messageContainerRef.current;
+
+                const previousHeight = container?.scrollHeight ?? 0;
+
                 prependMessages(response);
+
+                requestAnimationFrame(() => {
+                    if(!container){
+                        return;
+                    }
+
+                    const currentHeight = container.scrollHeight;
+
+                    container.scrollTop += currentHeight - previousHeight;
+                });
             }
         } catch(error){
             console.error(error);
@@ -95,5 +122,5 @@ export const useChat = () => {
         }
     };
 
-    return { currentRoom, messages, messageEndRef, messageContainerRef, handleScroll};
+    return { currentRoom, messages, messageEndRef, messageContainerRef, handleScroll, scrollBottom, isNearBottom};
 };
