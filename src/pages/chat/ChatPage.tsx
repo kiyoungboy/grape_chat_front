@@ -50,9 +50,9 @@ export default function ChatPage() {
                 {currentRoom ? (
                     <>
                         <ChatHeader />
-                        <section className={styles.messageArea}>
+                        <div className={styles.messageArea}>
                             <ChatMessageList />
-                        </section>
+                        </div>
 
                         {typingUsers.length > 0 && (
                             <div className={styles.typing}>

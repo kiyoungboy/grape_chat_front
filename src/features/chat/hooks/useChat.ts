@@ -50,21 +50,17 @@ export const useChat = () => {
                 const response = await getMessages(currentRoom.roomKey);
                 setMessages(response);
                 requestAnimationFrame(() => {scrollBottom();})
-                const lastMessage = response[response.length - 1];
+                // const lastMessage = response[response.length - 1];
 
-                if(lastMessage && client){
-                    client.publish({
-                        destination:"publish/chat/read",
-                        body: JSON.stringify({
-                            eventType: "READ",
-                            payload: {
-                                roomKey: currentRoom.roomKey,
-                                userKey,
-                                messageKey: lastMessage.messageKey,
-                            },
-                        }),
-                    });
-                }
+                // if(lastMessage && client){
+                //     client.publish({
+                //         destination:"/publish/chat/read",
+                //         body: JSON.stringify({
+                //             roomKey: currentRoom.roomKey,
+                //             messageKey: lastMessage.messageKey,                            
+                //         }),
+                //     });
+                // }
             } catch(error){
                 console.error(error);
             }
