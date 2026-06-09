@@ -11,4 +11,12 @@ export interface PresenceUser {
     lastActiveAt: string;
 
     updatedAt: string;
+
+    nickname: string;
+}
+
+export interface ChatRoomParticipant {
+    userKey: string;
+    userEmail: string;
+    nickname: string;
 }

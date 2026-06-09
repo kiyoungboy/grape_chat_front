@@ -1,22 +1,26 @@
 import styles from "./PresenceUserItem.module.css";
 
-import type { PresenceUser }
+import type { ChatRoomParticipant, PresenceUser }
 from "@/features/presence/types/presence.type";
 
 interface Props {
-    user: PresenceUser;
+    user: PresenceUser | ChatRoomParticipant;
+    roomMode?: boolean;
 }
 
 export default function PresenceUserItem({
     user,
+    roomMode = false,
 }: Props) {
 
     const isOnline =
-        user.onlineYn === "Y";
+        "onlineYn" in user && user.onlineYn === "Y";
 
     return (
         <div className={styles.item}>
-
+            {!roomMode && (
+                <div className={`${styles.status}${isOnline ? styles.online : styles.offline}`} />
+            )}
             <div
                 className={`
                     ${styles.status}
@@ -32,16 +36,18 @@ export default function PresenceUserItem({
             <div className={styles.info}>
 
                 <strong>
-                    {user.userKey}
+                    {user.nickname || user.userEmail || user.userKey}
                 </strong>
-
-                <span>
-                    {
-                        isOnline
-                            ? "온라인"
-                            : "오프라인"
-                    }
-                </span>
+                
+                {!roomMode &&(
+                    <span>
+                        {
+                            isOnline
+                                ? "온라인"
+                                : "오프라인"
+                        }
+                    </span>
+                )}
 
             </div>
 

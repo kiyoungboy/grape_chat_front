@@ -7,3 +7,9 @@ export const getChatRooms = async () => {
 
     return responseData<ChatRoom[]>(response);
 }
+
+export const getRoomParticipants = async (roomKey: string) => {
+    const response = await axios.get(`/chat/rooms/${roomKey}/participants`, {withCredentials: true},);
+
+    return response.data;
+}
