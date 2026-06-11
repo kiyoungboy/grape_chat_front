@@ -28,7 +28,13 @@ export const usePresenceStore =
 
         setUsers: (users) =>
             set({
-                users,
+                users: [...users].sort((a, b) => {
+                    if (a.onlineYn === b.onlineYn) {
+                        return a.nickname.localeCompare(b.nickname);
+                    }
+
+                    return a.onlineYn === "Y" ? -1 : 1;
+                }),
             }),
 
         setRoomParticipants: (roomParticipants) =>
@@ -44,17 +50,34 @@ export const usePresenceStore =
         updateUserStatus: (
             userKey,
             online
-        ) => set((state) => ({
-            users: state.users.map((user) => {
-                if(user.userKey !== userKey){
-                    return user;
-                }
+        ) =>
+            set((state) => {
 
+                const users = state.users
+                    .map((user) => {
+
+                        if (user.userKey !== userKey) {
+                            return user;
+                        }
+                        return {
+                            ...user,
+                            onlineYn: online ? "Y" : "N",
+                            lastActiveAt: new Date().toISOString(),
+                        };
+                    })
+                    .sort((a, b) => {
+
+                        if (a.onlineYn === b.onlineYn) {
+                            return a.nickname.localeCompare(
+                                b.nickname
+                            );
+                        }
+                        return a.onlineYn === "Y"
+                            ? -1
+                            : 1;
+                    });
                 return {
-                    ...user,
-                    onlineYn: online ? "Y" : "N",
-                    lastActiveAt: new Date().toISOString(),
+                    users,
                 };
             }),
-        })),
     }));

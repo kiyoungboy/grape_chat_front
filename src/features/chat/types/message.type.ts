@@ -9,7 +9,7 @@ export interface MessageEventPayload {
     roomKey: string;
     senderUserKey: string;
     senderNickname: string;
-    messageType: string;
+    messageType: messageType;
     messageContent: string;
     fileKey?: string;
     createdAt: string;

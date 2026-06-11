@@ -19,19 +19,16 @@ export default function PresenceUserItem({
     return (
         <div className={styles.item}>
             {!roomMode && (
-                <div className={`${styles.status}${isOnline ? styles.online : styles.offline}`} />
-            )}
-            <div
-                className={`
-                    ${styles.status}
-
-                    ${
-                        isOnline
-                            ? styles.online
+                <div className={`
+                        ${styles.status}
+                        ${
+                            isOnline 
+                            ? styles.online 
                             : styles.offline
-                    }
-                `}
-            />
+                        }
+                    `}
+                />
+            )}
 
             <div className={styles.info}>
 

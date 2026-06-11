@@ -1,6 +1,8 @@
 import { responseData } from "@/services/api/response";
 import axios from "@/services/api/interceptor";
 import type { MessageEventPayload } from "../types/message.type";
+import { ENV } from "@/env/env";
+import { mockMessagesByRoom } from "@/mocks/message.mock";
 
 export interface SendMessageRequest {
     roomKey: string;
@@ -13,6 +15,11 @@ export interface SendMessageRequest {
 }
 
 export const getMessages = async( roomKey: string ) => {
+
+    if(ENV.USE_MOCK){
+        return (mockMessagesByRoom[roomKey] ?? []);
+    }
+
     const response = await axios.get(`/chat/message/${roomKey}`);
 
     return responseData<MessageEventPayload[]>(response);
@@ -35,6 +42,27 @@ export const getHistory = async (
 }
 
 export const sendMessage = async ( request: SendMessageRequest ) => {
+
+    if(ENV.USE_MOCK){
+        return {
+            messageKey:
+            crypto.randomUUID(),
+            roomKey:
+                request.roomKey,
+            senderUserKey:
+                "mock-user-001",
+            senderNickname:
+                "기영",
+            messageType:
+                "TEXT",
+            messageContent:
+                request.messageContent,
+            createdAt:
+                new Date().toISOString(),
+            readCount: 0,
+        }
+    }
+
     const response = await axios.post("/chat/message", request);
 
     return responseData<MessageEventPayload>(response);

@@ -11,6 +11,7 @@ import { useAuthStore } from "@/store/auth.store";
 import { usePresenceStore } from "@/features/presence/store/presence.store";
 import { getChatRooms } from "@/features/chat/api/room.api";
 import { useChatUiStore } from "@/features/chat/store/chatUi.store";
+import { ENV } from "@/env/env";
 
 export const useWebSocket = () => {
     const subscriptionRef = useRef<StompSubscription | null>(null);
@@ -33,6 +34,13 @@ export const useWebSocket = () => {
     const increaseNewMessage = useChatUiStore((state) => state.increaseNewMessage);
 
     useEffect(() => {
+
+        if(ENV.USE_MOCK){
+            console.log("[MOCK] websocket skipped");
+            setConnected(true);
+            return;
+        }
+
         const client = createStompClient();
 
         client.onConnect = () =>{
@@ -114,6 +122,10 @@ export const useWebSocket = () => {
     }, [setClient, setConnected, setConnecting, myUserKey, addRoom]);
 
     useEffect(() => {
+
+        if(ENV.USE_MOCK){
+            return;
+        }
 
         if(!client || !currentRoom || !connected){
             return;

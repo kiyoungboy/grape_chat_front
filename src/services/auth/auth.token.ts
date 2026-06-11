@@ -1,3 +1,4 @@
+import { ENV } from "@/env/env";
 import axios from "axios";
 
 export interface MeResponse {
@@ -10,6 +11,15 @@ export interface MeResponse {
 }
 
 export const getMe = async () => {
+    
+
+    if(ENV.USE_MOCK){
+        return {
+            userKey: "mock-user-001",
+            userEmail: "mock@test.com",
+            loginAuth: "L",
+        };
+    }
 
     const response = await axios.get<MeResponse>(
         "http://localhost:8181/auth/me",

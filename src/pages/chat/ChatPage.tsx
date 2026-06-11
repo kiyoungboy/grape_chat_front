@@ -1,5 +1,5 @@
 import styles from "./ChatPage.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ChatRoomList from "@/components/chat/ChatRoomList";
 import ChatMessageList from "@/components/chat/ChatMessageList";
 import ChatInput from "@/components/chat/ChatInput";
@@ -9,8 +9,18 @@ import PresencePanel from "@/components/presence/PresencePanel";
 import { useWebSocket } from "@/features/websocket/hooks/useWebSocket";
 import { useTypingStore } from "@/features/typing/store/typing.store";
 import { useRoomStore } from "@/features/chat/store/room.store";
+import { ENV } from "@/env/env";
+import { loadMockData } from "@/mocks/mockLoader";
 
 export default function ChatPage() {
+
+    useEffect(() => {
+        if(!ENV.USE_MOCK){
+            return;
+        }
+
+        loadMockData();
+    }, []);
 
     useWebSocket();
 
