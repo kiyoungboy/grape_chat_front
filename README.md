@@ -1,73 +1,88 @@
-# React + TypeScript + Vite
+## 1. 프로젝트 소개
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+운영링크: https://angdooz.co.kr  
+로그인 Front-end Git: https://github.com/kiyoungboy/grape_front  
+프로젝트 Back-end Git: https://github.com/world-booster/MARRYOH  
+개발기간: 2025/11 ~ ing  
+  
+실시간 채팅 기능을 제공하는 웹 기반 서비스입니다.  
+JWT 기반 인증, 로그인, 회원가입, WebSocket을 이용한 실시간 메시지 송수신, 친구 추가, 채팅방 생성, 읽음 처리 기능을 구현했습니다.  
+  
+개인 프로젝트로 진행했으며, 로그인/보안 서비스 및 채팅 서비스는 분리하여 구성하였습니다.  
 
-Currently, two official plugins are available:
+## 2. 주요 기능
+- 회원가입 / 로그인
+- JWT 기반 인증
+- Token 재발급 및 CSRF 공격 대응
+- 비밀번호 암호화
+- 소셜 로그인
+- WebSocket 기반 실시간 채팅
+- 채팅방 생성
+- 온/오프라인 상태 표시
+- 메시지 읽음 처리
+- Nginx + Docker 기반 배포
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 3. 기술 스택
+- Front-end: React(Vite, Zustand), TypeScript, Axios
+- Back-end: Java, Spring Boot, MyBatis
+- Database: MariaDB
+- Infra: Rocky Linux, Docker, Nginx
+- Auth: JWT, HttpOnly Cookie, CSRF Token
+- Tool: IntelliJ, VS Code, DBeaver, GitHub
 
-## React Compiler
+## 4. 프로젝트 구조(로그인)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 프로젝트 구조의 경우 접근성 그리고 확장성에 중점을 두어 구성했습니다.  
+- 전체 - 부분(기능, features)으로 구분하고, 단일 책임 원칙이 지켜질 수 있도록 노력했습니다.
+- 보안 관련 context는 상태가 일관될 수 있도록 한곳에서 전역적으로 관리하도록 구성했습니다.
 
-## Expanding the ESLint configuration
+## 5. 주요 구현 내용
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### JWT 기반 인증 구조
+- Access Token과 Refresh Token을 분리하여 인증 구조를 설계하였습니다.
+- Access Token 탈취를 우려해 Expiration의 기간을 짧게 설정하였습니다.
+- Token(Access, Refresh)을 사용한 뒤, 재발급을 통해 재사용성을 낮춤으로써 타인에 의한 탈취를 방지하였습니다.
+- Token(Access, Refresh)은 HttpOnly Cookie에 저장하여 JavaScript 접근을 제한하였습니다.
+- Refresh Token의 경우에는 DB에 저장하여 관리하고, 저장 시에는 해시값으로 저장하여 탈취 위험을 줄였습니다.
+- Access Token 만료 시 Axios Interceptor를 통해 자동 재발급 되도록 구현했습니다.
+- CSRF 위협에 대비해 CSRF Token을 통해 정상적인 요청 여부를 검증하였습니다.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### WebSocket 기반 실시간 메시지
+- WebSocket과 STOMP를 이용하여 실시간 메시지 송수신 기능을 구현하였습니다.
+- 사용자가 채팅방에 입장하면 해당 채팅방을 구독하고, 메시지 전송 시 구독 중인 사용자들에게 실시간으로 메시지가 전달되도록 구성하였습니다.
+- REST API와 WebSocket을 함께 사용하여 채팅방 조회, 메시지 이력 조회, 메시지 전송 흐름을 분리하였습니다.
+- 메시지 전송 시 보낸 사용자, 채팅방, 메시지 내용, 생성 기간을 함께 관리하여 채팅 내역을 DB에 저장하였습니다.
+- 중복 메시지 표시를 방지하기 위해 프론트엔드 상태 관리 로직에서 메시지 식별값 기준으로 중복 처리를 적용하였습니다.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 채팅방 및 참여자 관리
+- 사용자가 채팅방을 생성하고, 다른 사용자를 초대할 수 있도록 채팅방 새성 기능을 구현하였습니다.
+- 채팅방별 참여자 정보를 관리하여 사용자가 참여 중인 채팅방 목록만 조회되도록 처리하였습니다.
+- 채팅방 나가기 기능을 구현하여 사용자가 특정 채팅방에서 퇴장할 수 있도록 하였습니다.
+- 퇴장한 사용자와 기존 참여자를 구분하여 채팅방에 반영하였습니다.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 메시지 읽음 처리
+- 채팅방별 사용자 읽음 상태를 관리하여 메시지 읽음 처리 기능을 구현하였습니다.
+- 사용자가 채팅방에 입장하거나 메시지를 확인하면 해당 메시지를 읽음 상태로 저장하도록 처리하였습니다.
+- 읽음 이벤트를 WebSocket으로 전달하여 다른 사용자 화면에서도 읽음 상태가 반영되도록 구성하였습니다.
+- 마지막으로 읽은 메시지를 기준으로 읽지 않은 메시지 수를 계산하여 채팅방 목록에 표시할 수 있도록 구현하였습니다.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 온/오프라인 상태 관리
+- WebSocket 연결 상태를 기반으로 사용자의 온라인/오프라인 상태를 관리하였습니다.
+- 사용자의 접속여부에 따라 온/오프라인 상태가 변경되도록 구성하였습니다.
+- 로비에서는 전체 사용자 목록이 보이고, 채팅방에서는 채팅 참여자가 보이도록 구현하였습니다.
+- Presence 정보를 별도로 관리하여 실시간 채팅 기능과 사용자 상태 표시 기능을 분리하였습니다.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 배포 및 운영 환경 구성
+- Docker를 이용하여 Frontend, Backend, Database, Nginx 환경을 컨테이너 기반으로 구성하였습니다.
+- Nginx를 Reverse Proxy로 사용하여 정적 파일 서빙과 API 요청 프록시를 분리하였습니다.
+- 운영 서버에 배포하여 외부에서 서비스에 접근할 수 있도록 구성하였습니다.
+- HTTPS 적용을 통해 사용자 요청이 암호화된 통신 환경에서 처리되도록 하였습니다.
+- SSH는 개발 서버의 Local 환경에서만 접근이 가능하게 하고, 외부에서는 443 등 특정 포트만 허용하여 서비스 레벨에서만 접근이 가능하도록 설정했습니다.
+- Resource 및 설정 파일을 개발 코드와 분리하여 관리될 수 있도록 구성했습니다.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 6. 개선 예정 사항
+- 채팅 메시지 스크롤 자동화 기능 고도화
+- 친구 목록 기반으로의 전환 및 초대 기능 개선
+- 온/오프라인 상태 갱신 로직 안정화
+- 파일 및 이미지 메시지 전송 기능 추가
+- 모바일 환경 배포
