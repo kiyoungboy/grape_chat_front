@@ -33,6 +33,10 @@ export default function ChatHeader() {
             (state) => state.setCurrentRoom
         );
 
+    const handleGoHome = () => {
+        setCurrentRoom(undefined);
+    };
+
     const handleExitRoom =
         async () => {
 
@@ -63,6 +67,11 @@ export default function ChatHeader() {
         <div className={styles.header}>
 
             <div>
+                <button className={styles.homeButton} onClick={handleGoHome}>
+                    홈으로
+                </button>
+
+
                 <button
                     className={styles.exitButton}
 

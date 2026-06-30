@@ -1,11 +1,13 @@
 .wrapper {
   display: flex;
-
+  width: 100%;
   gap: 10px;
+  min-width: 0;
 }
 
 .wrapper input {
   flex: 1;
+  min-width: 0;
 
   height: 44px;
 
@@ -23,11 +25,12 @@
 }
 
 .wrapper button {
-  width: 88px;
+  min-width: 76px;
+  padding-inline: 14px;
 
   border: none;
 
-  border-radius: var(--radius-md);
+  border-radius: 8px;
 
   background-color: var(--color-primary);
 
@@ -40,4 +43,20 @@
 
 .wrapper button:hover {
   background-color: var(--color-primary-dark);
+}
+
+@media (max-width: 480px) {
+  .wrapper {
+    gap: 8px;
+  }
+
+  .wrapper input {
+    height: 42px;
+    padding-inline: 12px;
+  }
+
+  .wrapper button {
+    min-width: 64px;
+    padding-inline: 10px;
+  }
 }

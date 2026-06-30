@@ -1,0 +1,60 @@
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.item:hover {
+    background: #f5f5f5;
+}
+
+.online,
+.offline {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.online {
+    background: #2ecc71;
+}
+
+.offline {
+    background: #bbb;
+}
+
+.info {
+    min-width: 0;
+}
+
+.info strong {
+    display: block;
+    font-size: 14px;
+}
+
+.info p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #777;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.empty {
+    padding: 20px;
+    color: #888;
+    text-align: center;
+    font-size: 14px;
+}

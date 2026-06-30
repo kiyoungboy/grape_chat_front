@@ -3,6 +3,7 @@
   flex-direction: column;
 
   margin-bottom: 14px;
+  min-width: 0;
 }
 
 .mine {
@@ -22,15 +23,17 @@
 }
 
 .bubble {
-  max-width: 420px;
+  max-width: min(68%, 520px);
 
   padding: 12px 14px;
 
   border-radius: 14px;
 
+  overflow-wrap: anywhere;
   word-break: break-word;
 
   font-size: 14px;
+  line-height: 1.5;
 }
 
 .mine .bubble {
@@ -58,4 +61,11 @@
     color: var(--color-text-light);
 
     font-size: 11px;
+}
+
+@media (max-width: 560px) {
+  .bubble {
+    max-width: 84%;
+    padding: 10px 12px;
+  }
 }

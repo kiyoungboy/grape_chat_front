@@ -11,6 +11,7 @@ import { useAuthStore } from "@/store/auth.store";
 import { usePresenceStore } from "@/features/presence/store/presence.store";
 import { getChatRooms } from "@/features/chat/api/room.api";
 import { useChatUiStore } from "@/features/chat/store/chatUi.store";
+import { useFriendStore } from "@/features/friend/store/friend.store";
 import { ENV } from "@/env/env";
 
 export const useWebSocket = () => {
@@ -28,6 +29,7 @@ export const useWebSocket = () => {
     const markMessageAsRead = useChatStore((state) => state.markMessageAsRead);
     const myUserKey = useAuthStore((state) => state.userKey);
     const setUsers = usePresenceStore((state) => state.setUsers);
+    const syncFriendPresence = useFriendStore((state) => state.syncFriendPresence);
     const client = useWebSocketStore((state) => state.client);
     const connected = useWebSocketStore((state) => state.connected);
     const setRooms = useRoomStore((state) => state.setRooms);
@@ -61,6 +63,7 @@ export const useWebSocket = () => {
                     );
 
                     setUsers(users);
+                    syncFriendPresence(users);
                 }
             );
 
@@ -119,7 +122,7 @@ export const useWebSocket = () => {
         setClient(client);
 
         return () => { client.deactivate(); };
-    }, [setClient, setConnected, setConnecting, myUserKey, addRoom]);
+    }, [setClient, setConnected, setConnecting, myUserKey, addRoom, syncFriendPresence]);
 
     useEffect(() => {
 

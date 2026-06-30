@@ -4,18 +4,23 @@
   justify-content: space-between;
 
   align-items: center;
+  gap: 12px;
 
-  height: 72px;
+  min-height: 72px;
 
-  padding: 18px 24px;
+  padding: 16px clamp(14px, 2vw, 24px);
 
   border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
 .header h3 {
   margin: 0 0 4px;
 
   font-size: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .header span {
@@ -32,6 +37,7 @@
   font-size: 12px;
 
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .connected {
@@ -53,11 +59,43 @@
     color: #92400e;
 }
 
-.exitButton {
-    padding: 8px 14px;
+.homeButton {
+    min-height: 36px;
+    padding: 8px 12px;
+    margin-right: 8px;
 
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
+
+    background-color: #3b82f6;
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s,
+        transform 0.1s;
+}
+
+.homeButton:hover {
+    background-color: #2563eb;
+}
+
+.homeButton:active {
+    transform: scale(0.98);
+}
+
+.exitButton {
+    min-height: 36px;
+    padding: 8px 12px;
+
+    border: none;
+    border-radius: 8px;
 
     background-color: #ef4444;
 
@@ -65,6 +103,7 @@
 
     font-size: 13px;
     font-weight: 600;
+    white-space: nowrap;
 
     cursor: pointer;
 
@@ -79,4 +118,21 @@
 
 .exitButton:active {
     transform: scale(0.98);
+}
+
+@media (max-width: 560px) {
+  .header {
+    min-height: 60px;
+    align-items: flex-start;
+  }
+
+  .header h3 {
+    font-size: 16px;
+  }
+
+  .header span,
+  .status,
+  .exitButton {
+    font-size: 12px;
+  }
 }

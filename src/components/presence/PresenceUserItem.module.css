@@ -7,9 +7,10 @@
 
     padding: 10px;
 
-    border-radius: 10px;
+    border-radius: 8px;
 
     transition: 0.2s;
+    min-width: 0;
 }
 
 .item:hover {
@@ -48,10 +49,24 @@
     font-weight: 600;
 
     color: var(--color-text-main);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .info span {
     color: var(--color-text-sub);
 
     font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .item {
+    flex: 0 0 auto;
+    min-width: 148px;
+    background-color: #f8fafc;
+  }
 }
