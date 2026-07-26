@@ -29,6 +29,14 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
+      - name: Set npm version
+        run: npm install --global npm@11.x.x
+
+      - name: Show environment versions
+        run: |
+          node: --version
+          npm: --version
+
       - name: Install dependencies
         run: npm ci
 
