@@ -1,0 +1,153 @@
+name: Chat Frontend CD
+
+on:
+  workflow_run:
+    workflows:
+      - Chat Frontend CI
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: chat-frontend-production
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/marryoh-chat-frontend
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+
+    outputs:
+      image: ${{ steps.image.outputs.full_image }}
+
+    steps:
+      - name: Checkout tested commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - name: Set deployment image
+        id: image
+        shell: bash
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+          TAG="${{ github.event.workflow_run.head_sha }}"
+
+          echo "full_image=${IMAGE}:${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ github.event.workflow_run.head_sha }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to Production
+    needs:
+      - build-and-push
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.PROD_SSH_HOST }}
+          SSH_PORT: ${{ secrets.PROD_SSH_PORT }}
+        run: |
+          install -m 700 -d ~/.ssh
+
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy chat frontend
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.PROD_SSH_HOST }}
+          SSH_PORT: ${{ secrets.PROD_SSH_PORT }}
+          SSH_USER: ${{ secrets.PROD_SSH_USER }}
+          DEPLOY_IMAGE: ${{ needs.build-and-push.outputs.image }}
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GHCR_PAT }}
+        run: |
+          ssh \
+            -i ~/.ssh/id_ed25519 \
+            -p "$SSH_PORT" \
+            "$SSH_USER@$SSH_HOST" \
+            "DEPLOY_IMAGE='$DEPLOY_IMAGE' \
+             GHCR_USERNAME='$GHCR_USERNAME' \
+             GHCR_TOKEN='$GHCR_TOKEN' \
+             bash -s" <<'REMOTE'
+          set -Eeuo pipefail
+
+          cd /svc/marryoh
+
+          printf '%s' "$GHCR_TOKEN" |
+            docker login ghcr.io \
+              --username "$GHCR_USERNAME" \
+              --password-stdin
+
+          export CHAT_FRONTEND_IMAGE="$DEPLOY_IMAGE"
+
+          docker compose pull chat-frontend
+          docker compose up -d --no-deps chat-frontend
+
+          for attempt in $(seq 1 20); do
+            if docker inspect \
+              --format='{{json .State.Health.Status}}' \
+              marryoh-chat-frontend 2>/dev/null |
+              grep -q '"healthy"'; then
+              echo "Chat frontend deployment succeeded."
+              exit 0
+            fi
+
+            sleep 3
+          done
+
+          echo "Chat frontend health check failed."
+          docker compose logs --tail=100 chat-frontend
+          exit 1
+          REMOTE
